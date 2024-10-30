@@ -78,6 +78,7 @@ vdbfusion::VDBVolumeNode::VDBVolumeNode() : vdb_volume_(InitVDBVolume()), tf_(nh
     nh_.getParam("/pcl_topic", pcl_topic);
     nh_.getParam("/preprocess", preprocess_);
     nh_.getParam("/apply_pose", apply_pose_);
+    nh_.getParam("/use_header_frame", use_header_frame_);
     nh_.getParam("/min_range", min_range_);
     nh_.getParam("/max_range", max_range_);
 
@@ -100,14 +101,24 @@ void vdbfusion::VDBVolumeNode::Integrate(const sensor_msgs::PointCloud2& pcd) {
     geometry_msgs::TransformStamped transform;
     sensor_msgs::PointCloud2 pcd_out;
 
-    if (tf_.lookUpTransform(pcd.header.stamp, timestamp_tolerance_, transform)) {
-        ROS_INFO("Transform available");
+    bool tf_available = false;
+    if (use_header_frame_) {
+        tf_available = tf_.lookUpTransform(pcd.header.frame_id, pcd.header.stamp, timestamp_tolerance_, transform);
+    } else {
+        tf_available = tf_.lookUpTransform(pcd.header.stamp, timestamp_tolerance_, transform);
+    }
+    if (tf_available) {
+        // ROS_INFO("Transform available");
         if (apply_pose_) {
             tf2::doTransform(pcd, pcd_out, transform);
         }
         auto scan = pcl2SensorMsgToEigen(pcd_out);
+        if (!scan.size()) {
+            return;
+        }
 
         if (preprocess_) {
+            // WARNING: This should be defined in the sensor frame
             PreProcessCloud(scan, min_range_, max_range_);
         }
         const auto& x = transform.transform.translation.x;

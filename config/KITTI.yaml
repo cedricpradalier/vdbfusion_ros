@@ -38,6 +38,7 @@ pcl_topic: "/kitti/velo/pointcloud"
 
 # Transform
 use_tf_transforms: true
+use_header_frame: false
 parent_frame: "world"
 child_frame: "base_link"
 timestamp_tolerance_ns: 10000000

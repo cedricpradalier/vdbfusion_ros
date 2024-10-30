@@ -94,13 +94,25 @@ bool vdbfusion::Transform::lookUpTransform(const ros::Time& timestamp,
     }
 }
 
+bool vdbfusion::Transform::lookUpTransform(const std::string & child_frame, 
+                                           const ros::Time& timestamp,
+                                           const ros::Duration& tolerance,
+                                           TransformStamped& transform) {
+    if (use_tf2_) {
+        return lookUpTransformTF2(parent_frame_, child_frame, timestamp, tolerance, transform);
+    } else {
+        ROS_ERROR("Lookup transform called with child frame while not using TF2. This will always failed");
+        return false;
+    }
+}
+
 bool vdbfusion::Transform::lookUpTransformTF2(const std::string& parent_frame,
                                               const std::string& child_frame,
                                               const ros::Time& timestamp,
                                               const ros::Duration& tolerance,
                                               TransformStamped& transform) {
-    if (buffer_.canTransform(parent_frame_, child_frame_, timestamp, tolerance)) {
-        transform = buffer_.lookupTransform(parent_frame_, child_frame_, timestamp, tolerance);
+    if (buffer_.canTransform(parent_frame, child_frame, timestamp, tolerance)) {
+        transform = buffer_.lookupTransform(parent_frame, child_frame, timestamp, tolerance);
         return true;
     }
     return false;

@@ -53,6 +53,7 @@ private:
     // PointCloud Processing
     bool preprocess_;
     bool apply_pose_;
+    bool use_header_frame_;
     float min_range_;
     float max_range_;
 

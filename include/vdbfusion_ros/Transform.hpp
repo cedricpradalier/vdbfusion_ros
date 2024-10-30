@@ -61,6 +61,11 @@ public:
                          const ros::Duration& tolerance,
                          geometry_msgs::TransformStamped& transform);
 
+    bool lookUpTransform(const std::string& child_frame,
+                         const ros::Time& timestamp,
+                         const ros::Duration& tolerance,
+                         geometry_msgs::TransformStamped& transform);
+
 private:
     bool lookUpTransformTF2(const std::string& parent_frame,
                             const std::string& child_frame,
