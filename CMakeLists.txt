@@ -36,6 +36,7 @@ find_package(
   COMPONENTS rospy
              roscpp
              tf2_ros
+             pcl_ros
              tf2_sensor_msgs
              std_msgs
              geometry_msgs
@@ -54,6 +55,7 @@ catkin_package(
   roscpp
   rospy
   tf2_ros
+  pcl_ros
   tf2_sensor_msgs
   std_msgs
   geometry_msgs

@@ -34,6 +34,7 @@ target_link_libraries(${PROJECT_NAME}_node PUBLIC
   ${catkin_LIBRARIES}
   VDBFusion::vdbfusion
   igl::core
+  happly
   transforms
 )
 target_include_directories(${PROJECT_NAME}_node PUBLIC

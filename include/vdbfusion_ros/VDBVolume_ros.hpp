@@ -27,6 +27,7 @@
 
 #include "Transform.hpp"
 #include "vdbfusion/VDBVolume.h"
+#include "vdbfusion/VDBColoredVolume.h"
 #include "vdbfusion_ros/save_vdb_volume.h"
 
 namespace vdbfusion {
@@ -34,26 +35,33 @@ class VDBVolumeNode {
 public:
     VDBVolumeNode();
 
-private:
-    VDBVolume InitVDBVolume();
-    void Integrate(const sensor_msgs::PointCloud2& pcd);
+protected:
+    std::shared_ptr<VDBVolume> InitVDBVolume();
+    void IntegrateColor(const sensor_msgs::PointCloud2& pcd);
+    void IntegrateGeometry(const sensor_msgs::PointCloud2& pcd);
     bool saveVDBVolume(vdbfusion_ros::save_vdb_volume::Request& path,
                        vdbfusion_ros::save_vdb_volume::Response& response);
 
-private:
+protected:
     ros::NodeHandle nh_;
     ros::Subscriber sub_;
     ros::ServiceServer srv_;
     Transform tf_;
     ros::Duration timestamp_tolerance_;
 
-private:
-    VDBVolume vdb_volume_;
+    bool saveVDBVolumeGeometry(vdbfusion_ros::save_vdb_volume::Request& path,
+                       vdbfusion_ros::save_vdb_volume::Response& response);
+    bool saveVDBVolumeColor(vdbfusion_ros::save_vdb_volume::Request& path,
+                       vdbfusion_ros::save_vdb_volume::Response& response);
+
+protected:
+    std::shared_ptr<VDBVolume> vdb_volume_;
 
     // PointCloud Processing
     bool preprocess_;
     bool apply_pose_;
     bool use_header_frame_;
+    bool process_color_;
     float min_range_;
     float max_range_;
 

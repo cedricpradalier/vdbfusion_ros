@@ -24,6 +24,7 @@
 voxel_size: 0.05
 sdf_trunc: 0.1
 space_carving: False
+process_color: False
 
 # Triangle Mesh Generation
 fill_holes: True
