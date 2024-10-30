@@ -23,26 +23,46 @@
 #pragma once
 
 #include <ros/ros.h>
+#include <pcl/point_types.h>
+#include <pcl_ros/point_cloud.h>
 #include <sensor_msgs/PointCloud2.h>
 
 #include "Transform.hpp"
 #include "vdbfusion/VDBVolume.h"
 #include "vdbfusion/VDBColoredVolume.h"
-#include "vdbfusion_ros/VDBVolume_functions.hpp"
-#include "vdbfusion_ros/save_vdb_volume.h"
 
 namespace vdbfusion {
-class VDBVolumeNode : public VDBVolumeFunctions {
+class VDBVolumeFunctions {
 public:
-    VDBVolumeNode();
+    VDBVolumeFunctions(const std::string & ns=std::string(""), bool no_tf=false);
+    void Integrate(const pcl::PointCloud<pcl::PointXYZ> & pcd, const Eigen::Vector3d & origin);
+    void Integrate(const pcl::PointCloud<pcl::PointXYZRGB> & pcd, const Eigen::Vector3d & origin);
+    void IntegrateColor(const sensor_msgs::PointCloud2& pcd);
+    void IntegrateGeometry(const sensor_msgs::PointCloud2& pcd);
+    void Clear();
+
+    bool saveVDBVolumeGeometry(const std::string & path, bool mesh_only=false);
+    bool saveVDBVolumeColor(const std::string & path, bool mesh_only=false);
 
 protected:
-    bool saveVDBVolume(vdbfusion_ros::save_vdb_volume::Request& path,
-                       vdbfusion_ros::save_vdb_volume::Response& response);
+    ros::NodeHandle nh_;
+    std::shared_ptr<Transform> tf_;
+    ros::Duration timestamp_tolerance_;
 
+    std::shared_ptr<VDBVolume> InitVDBVolume();
 protected:
-    ros::Subscriber sub_;
-    ros::ServiceServer srv_;
+    std::shared_ptr<VDBVolume> vdb_volume_;
 
+    // PointCloud Processing
+    bool preprocess_;
+    bool apply_pose_;
+    bool use_header_frame_;
+    bool process_color_;
+    float min_range_;
+    float max_range_;
+
+    // Triangle Mesh Extraction
+    bool fill_holes_;
+    float min_weight_;
 };
 }  // namespace vdbfusion

@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Transform.hpp"
+#include "vdbfusion_ros/Transform.hpp"
 
 #include <geometry_msgs/Transform.h>
 #include <geometry_msgs/TransformStamped.h>

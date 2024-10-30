@@ -20,25 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-add_library(transforms STATIC Transform.cpp)
-target_link_libraries(transforms PUBLIC
+add_library(vdbfusion_ros SHARED Transform.cpp VDBVolume_functions.cpp)
+target_link_libraries(vdbfusion_ros PUBLIC
   Sophus::Sophus
+  VDBFusion::vdbfusion
+  igl::core
+  happly
+  ${catkin_LIBRARIES}
 )
-target_include_directories(transforms PRIVATE
+target_include_directories(vdbfusion_ros PRIVATE
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
 )
 
 add_executable(${PROJECT_NAME}_node VDBVolume_ros.cpp)
 target_link_libraries(${PROJECT_NAME}_node PUBLIC
-  ${catkin_LIBRARIES}
-  VDBFusion::vdbfusion
-  igl::core
-  happly
-  transforms
+  vdbfusion_ros
 )
 target_include_directories(${PROJECT_NAME}_node PUBLIC
-  ${CMAKE_SOURCE_DIR}/include/vdbfusion_ros
+  ${CMAKE_SOURCE_DIR}/include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
 )

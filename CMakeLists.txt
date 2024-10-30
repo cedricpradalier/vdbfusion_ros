@@ -49,8 +49,9 @@ generate_messages()
 
 catkin_package(
   INCLUDE_DIRS
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/vdbfusion_ros/
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
   LIBRARIES
+  vdbfusion_ros
   CATKIN_DEPENDS
   roscpp
   rospy
@@ -60,9 +61,10 @@ catkin_package(
   std_msgs
   geometry_msgs
   sensor_msgs
-  message_runtime)
+  message_runtime
+  DEPENDS VDBFusion OpenVDB)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/vdbfusion_ros)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
