@@ -37,8 +37,16 @@ public:
     VDBVolumeFunctions(const std::string & ns=std::string(""), bool no_tf=false);
     void Integrate(const pcl::PointCloud<pcl::PointXYZ> & pcd, const Eigen::Vector3d & origin);
     void Integrate(const pcl::PointCloud<pcl::PointXYZRGB> & pcd, const Eigen::Vector3d & origin);
-    void IntegrateColor(const sensor_msgs::PointCloud2& pcd);
-    void IntegrateGeometry(const sensor_msgs::PointCloud2& pcd);
+	// Return false if the transform is not possible
+	void IntegrateColor(const sensor_msgs::PointCloud2& pcd) {
+		IntegrateColorCheckTF(pcd);
+	}
+    void IntegrateGeometry(const sensor_msgs::PointCloud2& pcd) {
+		IntegrateGeometryCheckTF(pcd);
+	}
+
+    bool IntegrateColorCheckTF(const sensor_msgs::PointCloud2& pcd);
+    bool IntegrateGeometryCheckTF(const sensor_msgs::PointCloud2& pcd);
     void Clear();
 
     bool saveVDBVolumeGeometry(const std::string & path, bool mesh_only=false);

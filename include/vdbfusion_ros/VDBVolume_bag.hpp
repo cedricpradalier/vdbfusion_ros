@@ -32,18 +32,20 @@
 #include "vdbfusion_ros/save_vdb_volume.h"
 
 namespace vdbfusion {
-    class VDBVolumeNode : public VDBVolumeFunctions {
+
+    class VDBVolumeBag : public VDBVolumeFunctions {
         public:
-            VDBVolumeNode();
+            VDBVolumeBag();
+
+            void processBagFile(const std::string & bagfile);
+            void processBagFile(const std::string & bagfile, const std::string & topic);
+            void processBagFile(const std::string & bagfile, const std::set<std::string> & topics);
+
+            bool saveVDBMesh();
+            bool saveVDBMesh(const std::string & vdb_path);
 
         protected:
-            bool saveVDBVolume(vdbfusion_ros::save_vdb_volume::Request& path,
-                    vdbfusion_ros::save_vdb_volume::Response& response);
-
-        protected:
-            ros::Subscriber sub_;
-            ros::ServiceServer srv_;
-
+            std::string pcl_topic_;
+            std::string vdb_path_;
     };
-
 }  // namespace vdbfusion

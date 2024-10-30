@@ -42,3 +42,13 @@ target_include_directories(${PROJECT_NAME}_node PUBLIC
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
 )
+
+add_executable(${PROJECT_NAME}_bag VDBVolume_bag.cpp)
+target_link_libraries(${PROJECT_NAME}_bag PUBLIC
+  vdbfusion_ros
+)
+target_include_directories(${PROJECT_NAME}_bag PUBLIC
+  ${CMAKE_SOURCE_DIR}/include
+  ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+)

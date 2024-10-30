@@ -169,3 +169,16 @@ bool vdbfusion::Transform::lookUpTransformQ(const ros::Time& timestamp,
     tf_queue_.erase(tf_queue_.begin(), it);
     return true;
 }
+
+void vdbfusion::Transform::setTransform(const TransformStamped& transform_msg) {
+  if (use_tf2_) {
+	  buffer_.setTransform(transform_msg,"aggregator",false);
+  } else {
+	  tf_queue_.push_back(transform_msg);
+  }
+}
+
+
+
+
+

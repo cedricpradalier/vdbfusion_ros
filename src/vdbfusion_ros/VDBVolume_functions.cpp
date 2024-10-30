@@ -149,77 +149,81 @@ void vdbfusion::VDBVolumeFunctions::Integrate(const pcl::PointCloud<pcl::PointXY
     vdb_volume_->Integrate(points, origin, [](float /*unused*/) { return 1.0; });
 }
 
-void vdbfusion::VDBVolumeFunctions::IntegrateColor(const sensor_msgs::PointCloud2& pcd) {
-    geometry_msgs::TransformStamped transform;
-    sensor_msgs::PointCloud2 pcd_ = pcd;
+bool vdbfusion::VDBVolumeFunctions::IntegrateColorCheckTF(const sensor_msgs::PointCloud2& pcd) {
+	geometry_msgs::TransformStamped transform;
+	sensor_msgs::PointCloud2 pcd_ = pcd;
 
-    pcl::PointCloud<pcl::PointXYZRGB> point_cloud;
-    pcl::moveFromROSMsg(pcd_, point_cloud);
-    if (preprocess_) {
-        PreProcessCloud(point_cloud, min_range_, max_range_);
-    }
+	pcl::PointCloud<pcl::PointXYZRGB> point_cloud;
+	pcl::moveFromROSMsg(pcd_, point_cloud);
+	if (preprocess_) {
+		PreProcessCloud(point_cloud, min_range_, max_range_);
+	}
 
-    if (!point_cloud.size()) {
-        return;
-    }
+	if (!point_cloud.size()) {
+		return true;
+	}
 
-    bool tf_available = false;
-    if (use_header_frame_) {
-        tf_available = tf_->lookUpTransform(pcd.header.frame_id, pcd.header.stamp, timestamp_tolerance_, transform);
-    } else {
-        tf_available = tf_->lookUpTransform(pcd.header.stamp, timestamp_tolerance_, transform);
-    }
-    if (tf_available) {
-        // ROS_INFO("Transform available");
-        if (apply_pose_) {
-            pcl_ros::transformPointCloud(point_cloud, point_cloud, transform.transform);
-        }
+	bool tf_available = false;
+	if (use_header_frame_) {
+		tf_available = tf_->lookUpTransform(pcd.header.frame_id, pcd.header.stamp, timestamp_tolerance_, transform);
+	} else {
+		tf_available = tf_->lookUpTransform(pcd.header.stamp, timestamp_tolerance_, transform);
+	}
+	if (!tf_available) {
+		return false;
+	}
+	// ROS_INFO("Transform available");
+	if (apply_pose_) {
+		pcl_ros::transformPointCloud(point_cloud, point_cloud, transform.transform);
+	}
 
-        auto [colors, points] = PointcloudToColorsAndPoints(point_cloud);
+	auto [colors, points] = PointcloudToColorsAndPoints(point_cloud);
 
-        const auto& x = transform.transform.translation.x;
-        const auto& y = transform.transform.translation.y;
-        const auto& z = transform.transform.translation.z;
-        auto origin = Eigen::Vector3d(x, y, z);
-        // TODO Add flag to decide if we need color or not
-        std::shared_ptr<VDBColoredVolume> colored_volume = std::dynamic_pointer_cast<VDBColoredVolume>(vdb_volume_);
-        assert(colored_volume);
-        colored_volume->Integrate(points, colors, origin, [](float /*unused*/) { return 1.0; });
-    }
+	const auto& x = transform.transform.translation.x;
+	const auto& y = transform.transform.translation.y;
+	const auto& z = transform.transform.translation.z;
+	auto origin = Eigen::Vector3d(x, y, z);
+	// TODO Add flag to decide if we need color or not
+	std::shared_ptr<VDBColoredVolume> colored_volume = std::dynamic_pointer_cast<VDBColoredVolume>(vdb_volume_);
+	assert(colored_volume);
+	colored_volume->Integrate(points, colors, origin, [](float /*unused*/) { return 1.0; });
+	return true;
 }
-void vdbfusion::VDBVolumeFunctions::IntegrateGeometry(const sensor_msgs::PointCloud2& pcd) {
-    geometry_msgs::TransformStamped transform;
-    pcl::PointCloud<pcl::PointXYZ> point_cloud;
-    sensor_msgs::PointCloud2 pcd_ = pcd;
-    pcl::moveFromROSMsg(pcd_, point_cloud);
-    if (preprocess_) {
-        PreProcessCloud(point_cloud, min_range_, max_range_);
-    }
+bool vdbfusion::VDBVolumeFunctions::IntegrateGeometryCheckTF(const sensor_msgs::PointCloud2& pcd) {
+	geometry_msgs::TransformStamped transform;
+	pcl::PointCloud<pcl::PointXYZ> point_cloud;
+	sensor_msgs::PointCloud2 pcd_ = pcd;
+	pcl::moveFromROSMsg(pcd_, point_cloud);
+	if (preprocess_) {
+		PreProcessCloud(point_cloud, min_range_, max_range_);
+	}
 
-    if (!point_cloud.size()) {
-        return;
-    }
+	if (!point_cloud.size()) {
+		return true;
+	}
 
-    bool tf_available = false;
-    if (use_header_frame_) {
-        tf_available = tf_->lookUpTransform(pcd.header.frame_id, pcd.header.stamp, timestamp_tolerance_, transform);
-    } else {
-        tf_available = tf_->lookUpTransform(pcd.header.stamp, timestamp_tolerance_, transform);
-    }
-    if (tf_available) {
-        if (apply_pose_) {
-            pcl_ros::transformPointCloud(point_cloud, point_cloud, transform.transform);
-        }
+	bool tf_available = false;
+	if (use_header_frame_) {
+		tf_available = tf_->lookUpTransform(pcd.header.frame_id, pcd.header.stamp, timestamp_tolerance_, transform);
+	} else {
+		tf_available = tf_->lookUpTransform(pcd.header.stamp, timestamp_tolerance_, transform);
+	}
+	if (!tf_available) {
+		return false;
+	}
+	if (apply_pose_) {
+		pcl_ros::transformPointCloud(point_cloud, point_cloud, transform.transform);
+	}
 
-        auto points = PointcloudToPoints(point_cloud);
+	auto points = PointcloudToPoints(point_cloud);
 
-        const auto& x = transform.transform.translation.x;
-        const auto& y = transform.transform.translation.y;
-        const auto& z = transform.transform.translation.z;
-        auto origin = Eigen::Vector3d(x, y, z);
-        // TODO Add flag to decide if we need color or not
-        vdb_volume_->Integrate(points, origin, [](float /*unused*/) { return 1.0; });
-    }
+	const auto& x = transform.transform.translation.x;
+	const auto& y = transform.transform.translation.y;
+	const auto& z = transform.transform.translation.z;
+	auto origin = Eigen::Vector3d(x, y, z);
+	// TODO Add flag to decide if we need color or not
+	vdb_volume_->Integrate(points, origin, [](float /*unused*/) { return 1.0; });
+	return true;
 }
 
 bool vdbfusion::VDBVolumeFunctions::saveVDBVolumeColor(const std::string & path, bool mesh_only) {

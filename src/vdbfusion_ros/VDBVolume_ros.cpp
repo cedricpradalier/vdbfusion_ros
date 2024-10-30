@@ -61,6 +61,9 @@ bool vdbfusion::VDBVolumeNode::saveVDBVolume(vdbfusion_ros::save_vdb_volume::Req
     }
 }
 
+
+
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "vdbfusion_rosnode");
     vdbfusion::VDBVolumeNode vdb_volume_node;

@@ -1,0 +1,7 @@
+<launch>
+  <arg name="config_file_name"/>
+  <arg name="path_to_rosbag_file"/>
+  <param name="use_sim_time" value="false"/>
+  <rosparam file="$(find vdbfusion_ros)/config/$(arg config_file_name)" />
+  <node name="vdbfusion" pkg="vdbfusion_ros" type="vdbfusion_ros_bag" output="screen" args="$(arg path_to_rosbag_file)"/>
+</launch>

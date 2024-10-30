@@ -35,7 +35,7 @@ apply_pose: True
 preprocess: True
 min_range: 0.0
 max_range: 1000.0
-pcl_topic: "/cloud"
+pcl_topic: "cloud"
 
 # Transform
 use_tf_transforms: true
