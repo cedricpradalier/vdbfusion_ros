@@ -155,9 +155,9 @@ void vdbfusion::VDBVolumeBag::processBagFile(const std::string & bagfile, const 
 
 bool vdbfusion::VDBVolumeBag::saveVDBMesh(const std::string & path) {
     if (process_color_) {
-        return saveVDBVolumeColor(path);
+        return saveVDBVolumeColor(path,true);
     } else {
-        return saveVDBVolumeGeometry(path);
+        return saveVDBVolumeGeometry(path,true);
     }
 }
 
@@ -172,5 +172,6 @@ int main(int argc, char** argv) {
     for (int c=1;c<argc;c++) {
         vdb_volume_bag.processBagFile(argv[c]);
     }
+    vdb_volume_bag.saveVDBMesh();
     return 0;
 }

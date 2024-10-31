@@ -1,7 +1,9 @@
 <launch>
   <arg name="config_file_name"/>
   <arg name="path_to_rosbag_file"/>
+  <arg name="path_to_mesh_file" default="vdb_"/>
   <param name="use_sim_time" value="false"/>
+  <param name="vdb_path" value="$(arg path_to_mesh_file)"/>
   <rosparam file="$(find vdbfusion_ros)/config/$(arg config_file_name)" />
   <node name="vdbfusion" pkg="vdbfusion_ros" type="vdbfusion_ros_bag" output="screen" args="$(arg path_to_rosbag_file)"/>
 </launch>
